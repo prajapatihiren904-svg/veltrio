@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Environment files (real secrets must never be committed)
+.env
+.env.*
+!.env.example
+
+# Build output
+dist/
+build/
+coverage/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea/
+backend/mongodb-expenses.json
