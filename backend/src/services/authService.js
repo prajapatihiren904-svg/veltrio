@@ -1,6 +1,6 @@
 import crypto from 'node:crypto';
 import jwt from 'jsonwebtoken';
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
 import User from '../models/User.js';
 import PasswordResetToken from '../models/PasswordResetToken.js';
@@ -336,23 +336,13 @@ export async function resetPassword(rawToken, password) {
 }
 
 async function sendVerificationEmail(email, otp) {
-  if (!env.smtpHost || !env.smtpUser || !env.smtpPass) {
-    throw ApiError.badRequest(
-      'Email service is not configured'
-    );
+  if (!env.resendApiKey) {
+    throw new Error('RESEND_API_KEY is not configured');
   }
 
-  const transporter = nodemailer.createTransport({
-    host: env.smtpHost,
-    port: env.smtpPort,
-    secure: env.smtpPort === 465,
-    auth: {
-      user: env.smtpUser,
-      pass: env.smtpPass,
-    },
-  });
+  const resend = new Resend(env.resendApiKey);
 
-  await transporter.sendMail({
+  const { data, error } = await resend.emails.send({
     from: env.emailFrom,
     to: email,
     subject: 'Verify your VELTRIO account',
@@ -369,32 +359,28 @@ async function sendVerificationEmail(email, otp) {
       </div>
     `,
   });
+
+  if (error) {
+    throw new Error(`Resend verification email failed: ${error.message}`);
+  }
+
+  return data;
 }
 
-function generateOtp() {
+
+function generateOTP() {
   return crypto.randomInt(100000, 1000000).toString();
 }
 
-async function sendResetEmail(email, resetUrl) {
-  if (!env.smtpHost) {
-    console.info(
-      `[VELTRIO development] Password reset link for ${email}: ${resetUrl}`
-    );
 
-    return;
+async function sendResetEmail(email, resetUrl) {
+  if (!env.resendApiKey) {
+    throw new Error('RESEND_API_KEY is not configured');
   }
 
-  const transporter = nodemailer.createTransport({
-    host: env.smtpHost,
-    port: env.smtpPort,
-    secure: env.smtpPort === 465,
-    auth: {
-      user: env.smtpUser,
-      pass: env.smtpPass,
-    },
-  });
+  const resend = new Resend(env.resendApiKey);
 
-  await transporter.sendMail({
+  const { data, error } = await resend.emails.send({
     from: env.emailFrom,
     to: email,
     subject: 'Reset your VELTRIO password',
@@ -402,9 +388,23 @@ async function sendResetEmail(email, resetUrl) {
     text: `Use this link to reset your password. It expires in 15 minutes: ${resetUrl}`,
 
     html: `
-      <p>Use the link below to reset your VELTRIO password.</p>
-      <p>This link expires in 15 minutes.</p>
-      <p><a href="${resetUrl}">Reset password</a></p>
+      <div style="font-family:Arial,sans-serif;max-width:500px;margin:auto;padding:25px;background:#101815;color:white;border-radius:14px">
+        <h2 style="color:#10b981">VELTRIO</h2>
+        <p>Use the link below to reset your password.</p>
+        <p>This link expires in 15 minutes.</p>
+        <a href="${resetUrl}" style="color:#10b981">Reset password</a>
+      </div>
     `,
   });
+
+  if (error) {
+    throw new Error(`Resend password reset email failed: ${error.message}`);
+  }
+
+  return data;
+} 
+
+function generateOtp() {
+  return crypto.randomInt(100000, 1000000).toString();
 }
+
