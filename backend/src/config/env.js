@@ -74,6 +74,7 @@ export function validateEnv(source = process.env) {
     problems.push('SMTP_HOST, SMTP_USER and SMTP_PASS must all be set together, or all left blank');
   }
   const emailFrom = (source.EMAIL_FROM || 'VELTRIO <no-reply@veltrio.app>').trim();
+  const resendApiKey = (source.RESEND_API_KEY || '').trim();
 
   const clientOrigins = (source.CLIENT_URL || 'http://localhost:5173')
     .split(',')
@@ -105,6 +106,7 @@ export function validateEnv(source = process.env) {
     smtpUser,
     smtpPass,
     emailFrom,
+    resendApiKey,
   });
 }
 
