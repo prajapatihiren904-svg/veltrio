@@ -22,3 +22,11 @@ Thumbs.db
 !.vscode/extensions.json
 .idea/
 backend/mongodb-expenses.json
+
+# Private Firebase credentials
+secrets/
+
+# Environment variables
+.env
+.env.*
+!.env.example

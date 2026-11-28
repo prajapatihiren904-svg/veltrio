@@ -1,14 +1,16 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { LockKeyhole, Mail, UserRound } from 'lucide-react';
+
 import Button from '@/components/common/Button';
 import Card from '@/components/common/Card';
 import Input from '@/components/forms/Input';
 import { ROUTES } from '@/constants/routes';
-import { authService } from '@/services/authService';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function RegisterPage() {
   const navigate = useNavigate();
+  const { register } = useAuth();
 
   const [form, setForm] = useState({
     name: '',
@@ -32,16 +34,13 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      const result = await authService.register({
+      await register({
         name: form.name,
         email: form.email,
         password: form.password,
       });
 
-      navigate('/verify-email', {
-        replace: true,
-        state: { email: result.email },
-      });
+      navigate('/dashboard', { replace: true });
     } catch (err) {
       setError(err.message || 'Unable to create your account.');
     } finally {
@@ -71,7 +70,9 @@ export default function RegisterPage() {
             autoComplete="name"
             icon={UserRound}
             value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            onChange={(e) =>
+              setForm({ ...form, name: e.target.value })
+            }
             placeholder="Your name"
           />
 
@@ -82,7 +83,9 @@ export default function RegisterPage() {
             autoComplete="email"
             icon={Mail}
             value={form.email}
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            onChange={(e) =>
+              setForm({ ...form, email: e.target.value })
+            }
             placeholder="you@example.com"
           />
 
@@ -94,7 +97,9 @@ export default function RegisterPage() {
             icon={LockKeyhole}
             hint="Use at least 8 characters."
             value={form.password}
-            onChange={(e) => setForm({ ...form, password: e.target.value })}
+            onChange={(e) =>
+              setForm({ ...form, password: e.target.value })
+            }
             placeholder="Create a password"
           />
 
@@ -105,7 +110,9 @@ export default function RegisterPage() {
             autoComplete="new-password"
             icon={LockKeyhole}
             value={form.confirmPassword}
-            onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
+            onChange={(e) =>
+              setForm({ ...form, confirmPassword: e.target.value })
+            }
             placeholder="Repeat your password"
           />
 

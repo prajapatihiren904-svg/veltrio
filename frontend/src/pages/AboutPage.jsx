@@ -430,147 +430,134 @@ function AboutPage() {
           <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-[#050907] to-transparent" />
         </div>
 
-        <div className="founder-container relative mx-auto grid w-full max-w-[1600px] items-center px-6 sm:px-10 lg:grid-cols-[0.95fr_1.05fr] lg:px-16">
+        {/* <div className="founder-container relative mx-auto grid w-full max-w-[1600px] items-center px-6 sm:px-10 lg:grid-cols-[0.95fr_1.05fr] lg:px-16"> */}
+{/* CENTERED FOUNDER CONTENT */}
+<div className="founder-copy relative z-20 mx-auto flex w-full max-w-[760px] flex-col items-start px-6 py-14 text-left lg:py-20">
 
-          {/* LEFT CONTENT */}
-          <div className="founder-copy relative z-20 order-2 max-w-[620px] py-14 lg:order-1 lg:py-20">
+  {/* SECTION LABEL */}
+  <p className="mb-5 flex items-center justify-start gap-4 text-[11px] font-extrabold uppercase tracking-[0.38em] text-emerald-300">
+    <span className="h-[3px] w-12 bg-emerald-400" />
+    THE PERSON BEHIND THE VISION
+  </p>
 
-            <p className="mb-5 flex items-center gap-4 text-[11px] font-extrabold uppercase tracking-[0.38em] text-emerald-300">
-              <span className="h-[3px] w-12 bg-emerald-400" />
-              THE PERSON BEHIND THE VISION
-            </p>
+  <p className="text-base font-semibold text-white/90">
+    Meet the Creator
+  </p>
 
-            <p className="text-base font-semibold text-white/90">
-              Meet the Creator
-            </p>
+  {/* NAME */}
+  <h2 className="mt-4 text-6xl font-black leading-[0.94] tracking-[-0.065em] text-white sm:text-7xl lg:text-[5.8rem]">
+    Hiren
 
-            {/* NAME WITH EMERALD GRADIENT */}
-            <h2 className="mt-4 text-6xl font-black leading-[0.94] tracking-[-0.065em] text-white sm:text-7xl lg:text-[5.8rem]">
-              Hiren
+    <span className="mt-1 block bg-gradient-to-r from-[#00E6A0] via-[#00C98C] to-[#35F0BD] bg-clip-text text-transparent">
+      Prajapati.
+    </span>
+  </h2>
 
-              <span className="mt-1 block bg-gradient-to-r from-[#00E6A0] via-[#00C98C] to-[#35F0BD] bg-clip-text text-transparent">
-                Prajapati.
-              </span>
-            </h2>
+  {/* DESIGNATION */}
+  <p className="mt-7 max-w-xl text-base font-bold leading-7 text-white sm:text-lg">
+    Developer · Technology Enthusiast · Creator of VELTRIO
+  </p>
 
-            <p className="mt-7 max-w-xl text-base font-bold leading-7 text-white sm:text-lg">
-              Developer · Technology Enthusiast · Creator of VELTRIO
-            </p>
+  {/* ABOUT */}
+  <p className="mt-5 max-w-[590px] text-sm leading-7 text-white/80 sm:text-base">
+    I'm an Artificial Intelligence and Data Science student passionate about
+    technology, programming and building meaningful digital experiences.
+  </p>
 
-            <p className="mt-5 max-w-[590px] text-sm leading-7 text-white/80 sm:text-base">
-              I'm an Artificial Intelligence and Data Science student passionate about
-              technology, programming and building meaningful digital experiences.
-            </p>
+  <p className="mt-4 max-w-[590px] text-sm leading-7 text-white/80 sm:text-base">
+    VELTRIO represents my vision of transforming an idea into a practical
+    digital product. Through this project, I explore modern web technologies,
+    full-stack development and user-focused design.
+  </p>
 
-            <p className="mt-4 max-w-[590px] text-sm leading-7 text-white/80 sm:text-base">
-              VELTRIO represents my vision of transforming an idea into a practical
-              digital product. Through this project, I explore modern web technologies,
-              full-stack development and user-focused design.
-            </p>
+  {/* FIELD OF STUDY / CURRENT FOCUS */}
+  <div className="mt-8 grid w-full max-w-[560px] grid-cols-1 gap-6 text-left sm:grid-cols-2">
 
-            {/* FIELD OF STUDY / CURRENT FOCUS */}
-            <div className="mt-7 grid max-w-[560px] grid-cols-2 gap-6">
+    <div className="border-t border-white/20 pt-4">
+      <p className="text-[11px] font-extrabold uppercase tracking-[0.2em] text-emerald-300">
+        FIELD OF STUDY
+      </p>
 
-              <div className="border-t border-white/20 pt-4">
-                <p className="text-[11px] font-extrabold uppercase tracking-[0.2em] text-emerald-300">
-                  FIELD OF STUDY
-                </p>
+      <p className="mt-2 text-sm font-bold leading-6 text-white">
+        Artificial Intelligence<br />
+        & Data Science
+      </p>
+    </div>
 
-                <p className="mt-2 text-sm font-bold leading-6 text-white">
-                  Artificial Intelligence<br />
-                  & Data Science
-                </p>
-              </div>
+    <div className="border-t border-white/20 pt-4">
+      <p className="text-[11px] font-extrabold uppercase tracking-[0.2em] text-emerald-300">
+        CURRENT FOCUS
+      </p>
 
-              <div className="border-t border-white/20 pt-4">
-                <p className="text-[11px] font-extrabold uppercase tracking-[0.2em] text-emerald-300">
-                  CURRENT FOCUS
-                </p>
+      <p className="mt-2 text-sm font-bold leading-6 text-white">
+        Full-Stack Development<br />
+        & Product Building
+      </p>
+    </div>
 
-                <p className="mt-2 text-sm font-bold leading-6 text-white">
-                  Full-Stack Development<br />
-                  & Product Building
-                </p>
-              </div>
+  </div>
 
-            </div>
+  {/* SOCIAL LINKS */}
+  <div className="mt-9 flex flex-wrap justify-start gap-3">
 
-            {/* SOCIAL LINKS */}
-            <div className="mt-8 flex flex-wrap gap-3">
+    <a
+      href="https://github.com/prajapatihiren904-svg"
+      target="_blank"
+      rel="noreferrer"
+      className="group inline-flex items-center gap-3 rounded-xl bg-emerald-400 px-6 py-3.5 text-sm font-extrabold text-[#04130d] shadow-[0_8px_35px_rgba(16,185,129,0.18)] transition-all duration-300 hover:-translate-y-1 hover:bg-emerald-300"
+    >
+      <Github size={20} />
+      GitHub
+      <ArrowUpRight size={17} />
+    </a>
 
-              <a
-                href="https://github.com/prajapatihiren904-svg"
-                target="_blank"
-                rel="noreferrer"
-                className="group inline-flex items-center gap-3 rounded-xl bg-emerald-400 px-6 py-3.5 text-sm font-extrabold text-[#04130d] shadow-[0_8px_35px_rgba(16,185,129,0.18)] transition-all duration-300 hover:-translate-y-1 hover:bg-emerald-300"
-              >
-                <Github size={20} />
-                GitHub
-                <ArrowUpRight size={17} />
-              </a>
+    <a
+      href="https://www.linkedin.com/in/hiren-prajapati-03bb7b394/"
+      target="_blank"
+      rel="noreferrer"
+      className="inline-flex items-center gap-3 rounded-xl border border-emerald-400 bg-black/20 px-6 py-3.5 text-sm font-bold text-white transition-all duration-300 hover:-translate-y-1 hover:bg-emerald-400/10"
+    >
+      <Linkedin size={20} />
+      LinkedIn
+      <ArrowUpRight size={17} />
+    </a>
 
-              <a
-                href="https://www.linkedin.com/in/hiren-prajapati-03bb7b394/"
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-3 rounded-xl border border-emerald-400 bg-black/20 px-6 py-3.5 text-sm font-bold text-white transition-all duration-300 hover:-translate-y-1 hover:bg-emerald-400/10"
-              >
-                <Linkedin size={20} />
-                LinkedIn
-                <ArrowUpRight size={17} />
-              </a>
+  </div>
 
-            </div>
+  {/* SIGNATURE */}
+  <div className="mt-9 w-full max-w-[510px] border-t border-white/20 pt-4 text-left">
+    <p className="text-sm text-white/85">
+      Designed, developed and brought to life with curiosity.
+    </p>
 
-            {/* SIGNATURE */}
-            <div className="mt-8 max-w-[510px] border-t border-white/20 pt-4">
-              <p className="text-sm text-white/85">
-                Designed, developed and brought to life with curiosity.
-              </p>
+    <p className="mt-1 text-xl font-bold italic text-emerald-300">
+      Hiren Prajapati
+    </p>
+  </div>
 
-              <p className="mt-1 text-xl font-bold italic text-emerald-300">
-                Hiren Prajapati
-              </p>
-            </div>
+</div>
+   
+   {/* FLOATING BUILT WITH PASSION BADGE */}
+<div className="founder-passion-badge absolute right-8 top-[22%] z-30 hidden items-center gap-3 rounded-2xl border border-emerald-400/50 bg-[#061510]/90 px-5 py-4 shadow-[0_10px_45px_rgba(0,0,0,0.25)] backdrop-blur-xl sm:flex lg:right-16">
 
-          </div>
+  <Sparkles
+    size={26}
+    className="text-emerald-300"
+  />
 
-          {/* RIGHT SIDE — LARGE TRANSPARENT PORTRAIT */}
-          <div className="founder-visual relative order-1 mx-auto h-[560px] w-full max-w-[820px] overflow-visible lg:order-2 lg:h-[900px] lg:max-w-none">
+  <div>
+    <p className="text-sm font-bold text-white">
+      Built with passion
+    </p>
 
-            {/* SOFT EMERALD LIGHT BEHIND THE PORTRAIT */}
-            <div className="founder-image-halo pointer-events-none absolute right-[-5%] top-[10%] h-[78%] w-[105%] rounded-full bg-emerald-400/[0.22] blur-[135px]" />
+    <p className="mt-0.5 text-xs text-white/70">
+      Idea into reality
+    </p>
+  </div>
 
-            <div className="founder-image-halo-secondary pointer-events-none absolute bottom-[3%] right-[2%] h-[52%] w-[92%] rounded-full bg-teal-300/[0.17] blur-[130px]" />
+</div>
 
-            {/* LARGE TRANSPARENT PORTRAIT — NO CARD OR BORDER */}
-  <img
-  src="/images/hiren-profile-cutout.png"
-  alt="Hiren Prajapati — Creator of VELTRIO"
-  onClick={() => setIsPortraitOpen(true)}
-  className="founder-portrait absolute bottom-0 left-[-15%] z-10 h-full w-[130%] max-w-none cursor-zoom-in object-contain object-bottom"
-/>
-
-            {/* FLOATING BADGE */}
-            <div className="founder-passion-badge absolute right-[1%] top-[15%] z-20 flex items-center gap-3 rounded-2xl border border-emerald-400/50 bg-[#06150f]/75 px-5 py-4 shadow-[0_10px_45px_rgba(0,0,0,0.25)] backdrop-blur-xl">
-
-              <Sparkles size={28} className="text-emerald-300" />
-
-              <div>
-                <p className="text-sm font-bold text-white">
-                  Built with passion
-                </p>
-
-                <p className="mt-0.5 text-xs text-white/70">
-                  Idea into reality
-                </p>
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
+            
 
         {/* FULLSCREEN IMAGE ON CLICK */}
         {isPortraitOpen && (
@@ -607,7 +594,7 @@ function AboutPage() {
           </div>
         )}
 
-      </section>
+      </section>S
 
       {/* MY JOURNEY */}
       <section className="relative overflow-hidden px-5 py-24 sm:px-10 lg:px-16">

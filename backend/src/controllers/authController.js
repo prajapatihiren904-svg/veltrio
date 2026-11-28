@@ -4,11 +4,11 @@ import * as authService from '../services/authService.js';
 import * as sessionService from '../services/sessionService.js';
 
 export async function register(req, res) {
-  const data = await authService.registerUser(req.body);
+  const data = await authService.registerUser(req.body, req);
 
   return sendSuccess(res, {
     statusCode: 201,
-    message: 'Account created successfully',
+    message: 'Account created and signed in successfully',
     data,
   });
 }

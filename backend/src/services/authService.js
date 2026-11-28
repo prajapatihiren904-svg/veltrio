@@ -1,5 +1,4 @@
 import crypto from 'node:crypto';
-import jwt from 'jsonwebtoken';
 import { Resend } from 'resend';
 
 import User from '../models/User.js';
@@ -14,6 +13,7 @@ import {
   revokeAllSessions,
 } from './sessionService.js';
 
+// Public user information
 const publicUser = (user) => ({
   id: user.id,
   name: user.name,
@@ -25,116 +25,29 @@ const publicUser = (user) => ({
   createdAt: user.createdAt,
 });
 
-export async function registerUser({ name, email, password }) {
-  let user = await User.findOne({ email });
+// ========================================
+// REGISTER USER
+// ========================================
 
-  if (user && user.emailVerified) {
+export async function registerUser({ name, email, password }, req) {
+  const normalizedEmail = email.trim().toLowerCase();
+
+  const existingUser = await User.findOne({
+    email: normalizedEmail,
+  });
+
+  if (existingUser) {
     throw ApiError.conflict(
       'An account with this email already exists'
     );
   }
 
-  if (user && user.emailVerificationLastSentAt) {
-    const elapsed =
-      Date.now() - user.emailVerificationLastSentAt.getTime();
-
-    if (elapsed < 60000) {
-      throw ApiError.badRequest(
-        'Please wait before requesting another OTP'
-      );
-    }
-  }
-
-  const otp = generateOtp();
-
-  const otpHash = crypto
-    .createHash('sha256')
-    .update(otp)
-    .digest('hex');
-
-  if (!user) {
-    user = new User({
-      name,
-      email,
-      password,
-      emailVerified: false,
-    });
-  } else {
-    user.name = name;
-    user.password = password;
-    user.emailVerified = false;
-  }
-
-  user.emailVerificationCodeHash = otpHash;
-  user.emailVerificationExpiresAt =
-    new Date(Date.now() + 10 * 60 * 1000);
-
-  user.emailVerificationAttempts = 0;
-  user.emailVerificationLastSentAt = new Date();
-
-  await user.save();
-
-  try {
-    await sendVerificationEmail(user.email, otp);
-  } catch (error) {
-    console.error('Verification email failed:', error.message);
-
-    throw ApiError.badRequest(
-      'Could not send verification email. Please try again.'
-    );
-  }
-
-  return {
-    requiresEmailVerification: true,
-    email: user.email,
-  };
-}
-
-export async function verifyEmail({ email, otp }, req) {
-  const user = await User.findOne({ email }).select(
-    '+emailVerificationCodeHash +emailVerificationExpiresAt'
-  );
-
-  if (!user) {
-    throw ApiError.badRequest('Invalid verification request');
-  }
-
-  if (user.emailVerified) {
-    throw ApiError.badRequest('Email is already verified');
-  }
-
-  if (
-    !user.emailVerificationCodeHash ||
-    !user.emailVerificationExpiresAt ||
-    user.emailVerificationExpiresAt <= new Date()
-  ) {
-    throw ApiError.badRequest(
-      'OTP expired. Please request a new OTP.'
-    );
-  }
-
-  if (user.emailVerificationAttempts >= 5) {
-    throw ApiError.badRequest(
-      'Too many incorrect attempts. Request a new OTP.'
-    );
-  }
-
-  const otpHash = crypto
-    .createHash('sha256')
-    .update(otp)
-    .digest('hex');
-
-  if (otpHash !== user.emailVerificationCodeHash) {
-    user.emailVerificationAttempts += 1;
-    await user.save();
-
-    throw ApiError.badRequest('Incorrect verification code');
-  }
-
-  user.emailVerified = true;
-  user.emailVerificationCodeHash = undefined;
-  user.emailVerificationExpiresAt = undefined;
-  user.emailVerificationAttempts = 0;
+  const user = new User({
+    name: name.trim(),
+    email: normalizedEmail,
+    password,
+    emailVerified: true,
+  });
 
   await user.save();
 
@@ -146,54 +59,32 @@ export async function verifyEmail({ email, otp }, req) {
   };
 }
 
-export async function resendVerificationOtp(email) {
-  const user = await User.findOne({ email });
+// ========================================
+// EMAIL VERIFICATION DISABLED
+// ========================================
 
-  if (!user) {
-    throw ApiError.badRequest(
-      'Unable to process verification request'
-    );
-  }
-
-  if (user.emailVerified) {
-    throw ApiError.badRequest('Email is already verified');
-  }
-
-  if (user.emailVerificationLastSentAt) {
-    const elapsed =
-      Date.now() - user.emailVerificationLastSentAt.getTime();
-
-    if (elapsed < 60000) {
-      throw ApiError.badRequest(
-        'Please wait 60 seconds before requesting another OTP'
-      );
-    }
-  }
-
-  const otp = generateOtp();
-
-  user.emailVerificationCodeHash = crypto
-    .createHash('sha256')
-    .update(otp)
-    .digest('hex');
-
-  user.emailVerificationExpiresAt =
-    new Date(Date.now() + 10 * 60 * 1000);
-
-  user.emailVerificationAttempts = 0;
-  user.emailVerificationLastSentAt = new Date();
-
-  await user.save();
-
-  await sendVerificationEmail(user.email, otp);
-
-  return {
-    message: 'A new verification code has been sent',
-  };
+export async function verifyEmail() {
+  throw ApiError.badRequest(
+    'Email verification is disabled'
+  );
 }
 
+export async function resendVerificationOtp() {
+  throw ApiError.badRequest(
+    'Email verification is disabled'
+  );
+}
+
+// ========================================
+// LOGIN USER
+// ========================================
+
 export async function loginUser({ email, password }, req) {
-  const user = await User.findOne({ email }).select('+password');
+  const normalizedEmail = email.trim().toLowerCase();
+
+  const user = await User.findOne({
+    email: normalizedEmail,
+  }).select('+password');
 
   if (!user || !(await user.comparePassword(password))) {
     throw ApiError.unauthorized(
@@ -204,12 +95,6 @@ export async function loginUser({ email, password }, req) {
   if (user.status !== 'active') {
     throw ApiError.forbidden(
       'This account has been suspended'
-    );
-  }
-
-  if (!user.emailVerified) {
-    throw ApiError.forbidden(
-      'Please verify your email before signing in'
     );
   }
 
@@ -225,6 +110,10 @@ export async function loginUser({ email, password }, req) {
   };
 }
 
+// ========================================
+// GET CURRENT USER
+// ========================================
+
 export async function getCurrentUser(userId) {
   const user = await User.findById(userId);
 
@@ -237,16 +126,32 @@ export async function getCurrentUser(userId) {
   return publicUser(user);
 }
 
+// ========================================
+// LOGOUT USER
+// ========================================
+
 export async function logoutUser(sessionId) {
   await revokeCurrentSession(sessionId);
 }
 
+// ========================================
+// FORGOT PASSWORD
+// ========================================
+
 export async function requestPasswordReset(email) {
-  const user = await User.findOne({ email });
+  const normalizedEmail = email.trim().toLowerCase();
 
-  if (!user || user.status !== 'active') return;
+  const user = await User.findOne({
+    email: normalizedEmail,
+  });
 
-  await PasswordResetToken.deleteMany({ user: user.id });
+  if (!user || user.status !== 'active') {
+    return;
+  }
+
+  await PasswordResetToken.deleteMany({
+    user: user.id,
+  });
 
   const rawToken = crypto.randomBytes(32).toString('hex');
 
@@ -274,6 +179,10 @@ export async function requestPasswordReset(email) {
     );
   }
 }
+
+// ========================================
+// RESET PASSWORD
+// ========================================
 
 export async function resetPassword(rawToken, password) {
   const tokenHash = crypto
@@ -331,51 +240,18 @@ export async function resetPassword(rawToken, password) {
     user: user.id,
   });
 
-  // Revoke every active session after a password reset.
   await revokeAllSessions(user.id);
 }
 
-async function sendVerificationEmail(email, otp) {
-  if (!env.resendApiKey) {
-    throw new Error('RESEND_API_KEY is not configured');
-  }
-
-  const resend = new Resend(env.resendApiKey);
-
-  const { data, error } = await resend.emails.send({
-    from: env.emailFrom,
-    to: email,
-    subject: 'Verify your VELTRIO account',
-
-    text: `Your VELTRIO verification code is ${otp}. It expires in 10 minutes.`,
-
-    html: `
-      <div style="font-family:Arial,sans-serif;max-width:500px;margin:auto;padding:25px;background:#101815;color:white;border-radius:14px">
-        <h2 style="color:#10b981">Welcome to VELTRIO</h2>
-        <p>Your email verification code is:</p>
-        <h1 style="letter-spacing:8px;color:#10b981">${otp}</h1>
-        <p>This code expires in 10 minutes.</p>
-        <p>If you did not create this account, ignore this email.</p>
-      </div>
-    `,
-  });
-
-  if (error) {
-    throw new Error(`Resend verification email failed: ${error.message}`);
-  }
-
-  return data;
-}
-
-
-function generateOTP() {
-  return crypto.randomInt(100000, 1000000).toString();
-}
-
+// ========================================
+// SEND PASSWORD RESET EMAIL
+// ========================================
 
 async function sendResetEmail(email, resetUrl) {
   if (!env.resendApiKey) {
-    throw new Error('RESEND_API_KEY is not configured');
+    throw new Error(
+      'RESEND_API_KEY is not configured'
+    );
   }
 
   const resend = new Resend(env.resendApiKey);
@@ -390,21 +266,23 @@ async function sendResetEmail(email, resetUrl) {
     html: `
       <div style="font-family:Arial,sans-serif;max-width:500px;margin:auto;padding:25px;background:#101815;color:white;border-radius:14px">
         <h2 style="color:#10b981">VELTRIO</h2>
+
         <p>Use the link below to reset your password.</p>
+
         <p>This link expires in 15 minutes.</p>
-        <a href="${resetUrl}" style="color:#10b981">Reset password</a>
+
+        <a href="${resetUrl}" style="color:#10b981">
+          Reset password
+        </a>
       </div>
     `,
   });
 
   if (error) {
-    throw new Error(`Resend password reset email failed: ${error.message}`);
+    throw new Error(
+      `Resend password reset email failed: ${error.message}`
+    );
   }
 
   return data;
-} 
-
-function generateOtp() {
-  return crypto.randomInt(100000, 1000000).toString();
 }
-

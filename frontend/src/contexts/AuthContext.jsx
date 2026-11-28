@@ -89,10 +89,14 @@ export function AuthProvider({ children }) {
   }, []);
 
   // Registration only sends OTP. It does not establish a session.
-  const register = useCallback(
-    async (payload) => authService.register(payload),
-    []
-  );
+ const register = useCallback(
+  async (payload) => {
+    const result = await authService.register(payload);
+    establishSession(result);
+    return result.user;
+  },
+  [establishSession]
+);
 
   const verifyEmail = useCallback(
     async (payload) => {
